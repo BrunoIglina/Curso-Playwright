@@ -1,0 +1,16 @@
+# Dependencias
+node_modules/
+
+
+*.zip
+*.rar
+*.tar.gz
+
+# Playwright specific
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/node_modules/ 
+*.zip 
+test-results/ 
+playwright-report/ 

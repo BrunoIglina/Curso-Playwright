@@ -1,6 +1,7 @@
 const {test, expect} = require('@playwright/test');
 
-/* hasta video 14
+// hasta video 14
+
 test('Browser Context Plawright test', async ({browser})=>
 {
     
@@ -32,8 +33,8 @@ test('Browser Context Plawright test', async ({browser})=>
     // obtener todos los textos de los titulos de las tarjetas, es un defecto porque no espera a que se carguen en el dom, realmente no se realiza el await y no falla, devuelve array vacio
     const allTitles = await cardTitles.allTextContents();
     console.log(allTitles);
-})
-*/
+}) 
+
 
 // video 15 en donde hay que registrarse y validar en esta url https://rahulshettyacademy.com/client/auth/login
 
@@ -67,4 +68,4 @@ test('Page test register and login', async({page})=> {
 
     console.log(await page.locator('.card-body').nth(0).textContent());
 
-})
+}) 

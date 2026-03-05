@@ -1,0 +1,19 @@
+{
+  "name": "curso-playwright",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "Sección 3",
+    "Sección 4",
+    "Sección 5",
+    "Sección 6",
+    "Sección 7"
+  ],
+  "devDependencies": {
+    "@playwright/test": "^1.40.0"
+  },
+  "scripts": {
+    "install:playwright": "npx playwright install",
+    "test": "npx playwright test"
+  }
+}

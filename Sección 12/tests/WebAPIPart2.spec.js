@@ -1,37 +1,43 @@
-const {test, expect} = require('@playwright/test');
+const {test, expect, request } = require("@playwright/test");
+const {APIUtils} = require("./utils/APIUtils");
+let webContext;
 
 
-
-
-test.only('Child Windows handling', async({page})=> {
-
-    await page.pause();
-    const productName = "ZARA COAT 3";
-    const products = page.locator(".card-body");
-    await page.goto("https://rahulshettyacademy.com/client");
-
-    const email = "anshika@gmail.com";
-
-    await page.locator('#userEmail').fill(email);
-    await page.locator('#userPassword').fill("Iamking@000");
-
-    await page.locator("input[value='Login']").click();
-    await page.waitForLoadState('networkidle');
-    await page.locator(".card-body b").first().waitFor(); // espera a que el primer producto se cargue para asegurarse de que la página esté completamente cargada
-
-    const titles = await page.locator(".card-body b").allTextContents();
-    console.log(titles);
-
-    const count = await products.count();
-    for (let i=0; i<count; i++)
+test.beforeAll(async({browser})=>
     {
-     if(await products.nth(i).locator("b").textContent()=== productName){
-        // añandir al carrito
-        await products.nth(i).locator("text = Add To Cart").click();
-        break;
-     }
-    }
-    await page.locator("[routerlink *='cart']").click();
+     const context = await browser.newContext();
+     const page = await context.newPage();
+     await page.goto("https://rahulshettyacademy.com/client");
+     await page.locator("#userEmail").fill("anshika@gmail.com");
+     await page.locator("#userPassword").fill("Iamking@000");
+     await page.locator("[value='Login']").click();
+     await page.waitForLoadState('networkidle');
+     await context.storageState({path: 'state.json'});
+     webContext =await browser.newContext({storageState:'state.json'});
+    })
+
+
+// la ventaja es que inicio sesion una sola vez antes de todos los test y luego inyecto el token en el storageState, luego dichos test reutilizan ese token.
+    test('Client App Sessions', async({}) =>
+    {
+        const productName = "ZARA COAT 3";
+        const page = await webContext.newPage();
+        await page.goto("https://rahulshettyacademy.com/client");
+        const products = page.locator(".card-body");
+
+        const titles = await page.locator(".card-body b").allTextContents();
+        console.log(titles);
+
+        const count = await products.count();
+        for (let i=0; i<count; i++)
+        {
+        if(await products.nth(i).locator("b").textContent()=== productName){
+
+            await products.nth(i).locator("text = Add To Cart").click();
+            break;
+        }
+        }
+        await page.locator("[routerlink *='cart']").click();
 
     await page.locator("div li").first().waitFor();
 
@@ -55,7 +61,7 @@ test.only('Child Windows handling', async({page})=> {
         }
     }
     
-    await expect(page.locator(".user__name [type='text']").first()).toHaveText(email);
+    await expect(page.locator(".user__name [type='text']").first()).toHaveText("anshika@gmail.com");
 
     await page.locator(".action__submit").click();
 
@@ -93,13 +99,5 @@ test.only('Child Windows handling', async({page})=> {
 
     const orderIdDetails = (await page.locator(".col-text.-main").textContent())?.trim();
     expect(orderID?.includes(orderIdDetails)).toBeTruthy();
-
-
-
-       
-
-
-
-
-
-}) 
+        
+    })
